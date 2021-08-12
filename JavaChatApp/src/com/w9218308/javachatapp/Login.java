@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.UIManager;`
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
@@ -38,7 +38,7 @@ public class Login extends JFrame {
         setSize(300, 380);
         setLocationRelativeTo(null);
         contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5 ,5, 5));
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
@@ -77,13 +77,13 @@ public class Login extends JFrame {
         btnLogin = new JButton("Login");
         btnLogin.setBounds(91, 311, 117, 28);
         contentPane.add(btnLogin);
-        btnLogin.addActionListener(new ActionListener(){
+        btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = txtName.getText();
                 String address = txtAddress.getText();
                 int port = Integer.parseInt(txtPort.getText());
-                login(name, address, port);   
+                login(name, address, port);
             }
         });
     }
