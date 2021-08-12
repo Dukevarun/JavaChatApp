@@ -85,13 +85,12 @@ public class Login extends JFrame {
                 int port = Integer.parseInt(txtPort.getText());
                 login(name, address, port);   
             }
-
         });
     }
 
     private void login(String name, String address, int port) {
         dispose();
-        System.out.println(name + ", " + address + ", " + port);
+        new Client(name, address, port);
     }
 
 }
