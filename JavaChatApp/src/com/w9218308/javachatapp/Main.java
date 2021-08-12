@@ -7,7 +7,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
-                new Login().setVisible(true);
+                new Login("Login").setVisible(true);
             }
         });
     }
