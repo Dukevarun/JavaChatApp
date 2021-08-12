@@ -10,6 +10,10 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.GridBagConstraints;
 
 public class Client extends JFrame {
@@ -27,6 +31,7 @@ public class Client extends JFrame {
         this.address = address;
         this.port = port;
         createWindow();
+        console("Attempting a connection to " + address + ":" + port + ", user: " + name);
     }
     
     private void createWindow() {
@@ -42,30 +47,46 @@ public class Client extends JFrame {
         setTitle("Java Chat Client");
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5 , 5, 5));
-        setContentPane(contentPane);
-        setVisible(true);
+        setContentPane(contentPane);        
         
-        txthistory = new JTextArea();
-        txtMessage = new JTextField(10);
-        btnSend = new JButton("Send");
         contentPane.setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
+
+        txthistory = new JTextArea();
+        txthistory.setEditable(false);
         gc.fill = GridBagConstraints.BOTH;
         gc.gridx = 0;
         gc.gridy = 0;
         gc.weightx = 1;
         gc.weighty = 10;
         gc.gridwidth = 3;
+        gc.insets = new Insets(5, 5, 5, 5);
         contentPane.add(txthistory, gc);
+
+        txtMessage = new JTextField(10);
+        txtMessage.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    send(txtMessage.getText());
+                }
+            }
+        });
         gc.fill = GridBagConstraints.HORIZONTAL;
         gc.gridx = 0;
         gc.gridy = 1;
         gc.weightx = 2;
         gc.weighty = .2;
         gc.gridwidth = 2;
-        gc.insets = new Insets(0, 0, 0, 5);
+        gc.insets = new Insets(0, 5, 0, 5);
+
+        btnSend = new JButton("Send");
+        btnSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                send(txtMessage.getText());
+            }});
         contentPane.add(txtMessage, gc);
-        gc.fill = GridBagConstraints.HORIZONTAL;
         gc.gridx = 2;
         gc.gridy = 1;
         gc.weightx = 0.1;
@@ -73,5 +94,17 @@ public class Client extends JFrame {
         gc.gridwidth= 1;
         gc.insets = new Insets(0, 0, 0, 5);
         contentPane.add(btnSend, gc);
+
+        setVisible(true);
+        txtMessage.requestFocusInWindow();
+    }
+
+    private void send(String message) {
+        console(message);
+        txtMessage.setText("");
+    }
+
+    public void console(String message) {
+        txthistory.append(message + "\n\r");
     }
 }
