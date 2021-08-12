@@ -1,5 +1,8 @@
 package com.w9218308.javachatapp;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -74,6 +77,21 @@ public class Login extends JFrame {
         btnLogin = new JButton("Login");
         btnLogin.setBounds(91, 311, 117, 28);
         contentPane.add(btnLogin);
+        btnLogin.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = txtName.getText();
+                String address = txtAddress.getText();
+                int port = Integer.parseInt(txtPort.getText());
+                login(name, address, port);   
+            }
+
+        });
+    }
+
+    private void login(String name, String address, int port) {
+        dispose();
+        System.out.println(name + ", " + address + ", " + port);
     }
 
 }
