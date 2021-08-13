@@ -59,6 +59,17 @@ public class Client {
         send.start();
     }
 
+    public void close() {
+        new Thread() {
+            @Override
+            public void run() {
+                synchronized (socket) {
+                    socket.close();
+                }
+            }
+        }.start();
+    }
+
     public String getName() {
         return name;
     }

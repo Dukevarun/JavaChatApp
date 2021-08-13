@@ -6,6 +6,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
@@ -19,7 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
-public class ClientWindow extends JFrame implements Runnable{
+public class ClientWindow extends JFrame implements Runnable {
     private JPanel contentPane;
     private JTextArea txthistory;
     private JTextField txtMessage;
@@ -84,7 +86,7 @@ public class ClientWindow extends JFrame implements Runnable{
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    send(txtMessage.getText());
+                    send(txtMessage.getText(), true);
                 }
             }
         });
@@ -100,7 +102,7 @@ public class ClientWindow extends JFrame implements Runnable{
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                send(txtMessage.getText());
+                send(txtMessage.getText(), true);
             }
         });
         contentPane.add(txtMessage, gc);
@@ -112,16 +114,27 @@ public class ClientWindow extends JFrame implements Runnable{
         gc.insets = new Insets(0, 0, 0, 5);
         contentPane.add(btnSend, gc);
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                String disconnect = "/d/" + client.getID() + "/e/";
+                send(disconnect, false);
+                running = false;
+                client.close();
+            }
+        });
+
         setVisible(true);
         txtMessage.requestFocusInWindow();
     }
 
-    private void send(String message) {
-        if (message.equals("")) {
+    private void send(String message, boolean text) {
+        if (message.equals(""))
             return;
+        if (text) {
+            message = client.getName() + ": " + message;
+            message = "/m/" + message;
         }
-        message = client.getName() + ": " + message;
-        message = "/m/" + message;
         client.send(message.getBytes());
         txtMessage.setText("");
     }
@@ -140,7 +153,7 @@ public class ClientWindow extends JFrame implements Runnable{
                     if (message.startsWith("/c/")) {
                         client.setID(Integer.parseInt(message.split("/c/|/e/")[1]));
                         console("Successfully connected to server! ID: " + client.getID());
-                    }else if (message.startsWith("/m/")) {
+                    } else if (message.startsWith("/m/")) {
                         String text = message.split("/m/|/e/")[1];
                         console(text);
                     }
@@ -152,6 +165,6 @@ public class ClientWindow extends JFrame implements Runnable{
 
     @Override
     public void run() {
-        listen();        
+        listen();
     }
 }

@@ -54,7 +54,6 @@ public class Server implements Runnable {
             @Override
             public void run() {
                 while (running) {
-                    System.out.println(clients.size());
                     byte[] data = new byte[1024];
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     try {
@@ -90,15 +89,39 @@ public class Server implements Runnable {
             // UUID id = UUID.randomUUID();
             int id = UniqueIdentifier.getIdentifier();
             System.out.println("Identifier: " + id);
-            clients.add(new ServerClient(string.substring(3, string.length()), packet.getAddress(), packet.getPort(), id));
+            clients.add(
+                    new ServerClient(string.substring(3, string.length()), packet.getAddress(), packet.getPort(), id));
             System.out.println(string.substring(3, string.length()));
             String ID = "/c/" + id;
             send(ID, packet.getAddress(), packet.getPort());
         } else if (string.startsWith("/m/")) {
             sendToAll(string);
+        } else if (string.startsWith("/d/")) {
+            String id = string.split("/d/|/e/")[1];
+            disconnect(Integer.parseInt(id), true);
         } else {
             System.out.println(string);
         }
+    }
+
+    private void disconnect(int id, boolean status) {
+        ServerClient c = null;
+        for (int i = 0; i < clients.size(); i++) {
+            if (clients.get(i).getID() == id) {
+                c = clients.get(i);
+                clients.remove(i);
+                break;
+            }
+        }
+        String message = "";
+        if (status) {
+            message = "Client " + c.name.trim() + " (" + c.getID() + ") @ " + c.address.toString() + ":" + c.port
+                    + "disconnected.";
+        } else {
+            message = "Client " + c.name.trim() + " (" + c.getID() + ") @ " + c.address.toString() + ":" + c.port
+                    + "timed out.";
+        }
+        System.out.println(message);
     }
 
     private void send(String message, InetAddress address, int port) {
