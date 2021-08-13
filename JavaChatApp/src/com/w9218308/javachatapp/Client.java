@@ -168,6 +168,7 @@ public class Client extends JFrame {
         }
         message = name + ": " + message;
         console(message);
+        message = "/m/" + message;
         send(message.getBytes());
         txtMessage.setText("");
     }
