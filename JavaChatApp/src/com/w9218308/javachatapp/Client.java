@@ -14,7 +14,7 @@ public class Client {
     private DatagramSocket socket;
     private InetAddress ip;
     private Thread send;
-    private int ID = -1;    
+    private int ID = -1;
 
     public Client(String name, String address, int port) {
         this.name = name;

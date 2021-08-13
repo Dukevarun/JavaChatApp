@@ -54,6 +54,7 @@ public class Server implements Runnable {
             @Override
             public void run() {
                 while (running) {
+                    System.out.println(clients.size());
                     byte[] data = new byte[1024];
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     try {
@@ -62,9 +63,6 @@ public class Server implements Runnable {
                         e.printStackTrace();
                     }
                     process(packet);
-
-                    clients.add(new ServerClient("name", packet.getAddress(), packet.getPort(), 50));
-                    System.out.println(clients.get(0).address.toString() + ":" + clients.get(0).port);
                 }
             }
         };
