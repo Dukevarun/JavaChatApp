@@ -19,7 +19,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
-public class ClientWindow extends JFrame {
+public class ClientWindow extends JFrame implements Runnable{
     private JPanel contentPane;
     private JTextArea txthistory;
     private JTextField txtMessage;
@@ -27,6 +27,8 @@ public class ClientWindow extends JFrame {
     private DefaultCaret caret;
 
     private Client client;
+    private Thread run, listen;
+    private boolean running = false;
 
     public ClientWindow(String name, String address, int port) {
         setTitle("Java Chat Client");
@@ -40,6 +42,9 @@ public class ClientWindow extends JFrame {
         console("Attempting a connection to " + address + ":" + port + ", user: " + name);
         String connection = "/c/" + name;
         client.send(connection.getBytes());
+        running = true;
+        run = new Thread(this, "Running");
+        run.start();
     }
 
     private void createWindow() {
@@ -125,5 +130,27 @@ public class ClientWindow extends JFrame {
     public void console(String message) {
         txthistory.append(message + "\n\r");
         txthistory.setCaretPosition(txthistory.getDocument().getLength());
+    }
+
+    public void listen() {
+        listen = new Thread("Listen") {
+            @Override
+            public void run() {
+                while (running) {
+                    String message = client.receive();
+                    if (message.startsWith("/c/")) {
+                        System.out.println(message.length());
+                        client.setID(Integer.parseInt(message.split("/c/|/e/")[1]));
+                        console("Successfully connected to server! ID: " + client.getID());
+                    }
+                }
+            }
+        };
+        listen.start();
+    }
+
+    @Override
+    public void run() {
+        listen();        
     }
 }
