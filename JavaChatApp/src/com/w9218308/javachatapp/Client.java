@@ -41,22 +41,24 @@ public class Client extends JFrame {
     private Thread send;
 
     public Client(String name, String address, int port) {
-        super();
+        // super();
         this.name = name;
         this.address = address;
         this.port = port;
-        boolean connect = openConnection(address, port);
+        boolean connect = openConnection(address);
         if (!connect) {
             System.err.println("Connection Failed!");
             console("Connection Failed!");
         }
         createWindow();
         console("Attempting a connection to " + address + ":" + port + ", user: " + name);
+        String connection = name + " connected from " + address + ":" + port;
+        send(connection.getBytes());
     }
 
-    private boolean openConnection(String address, int port) {
+    private boolean openConnection(String address) {
         try {
-            socket = new DatagramSocket(port);
+            socket = new DatagramSocket();
             ip = InetAddress.getByName(address);
         } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
@@ -166,6 +168,7 @@ public class Client extends JFrame {
         }
         message = name + ": " + message;
         console(message);
+        send(message.getBytes());
         txtMessage.setText("");
     }
 
