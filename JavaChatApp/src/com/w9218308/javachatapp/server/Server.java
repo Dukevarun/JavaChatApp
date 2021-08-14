@@ -11,11 +11,13 @@ import java.util.List;
 
 public class Server implements Runnable {
     private List<ServerClient> clients = new ArrayList<ServerClient>();
+    private List<Integer> clientResponse = new ArrayList<Integer>();
 
     private int port;
     private DatagramSocket socket;
     private Thread run, manage, send, receive;
     private boolean running = false;
+    private final int MAX_ATTEMPTS = 5;
 
     public Server(int port) {
         this.port = port;
@@ -42,7 +44,26 @@ public class Server implements Runnable {
             @Override
             public void run() {
                 while (running) {
-                    // Manage
+                    sendToAll("/i/server");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    for (int i = 0; i < clients.size(); i++) {
+                        ServerClient c = clients.get(i);
+                        if (!clientResponse.contains(c.getID())) {
+                            if (c.attempt >= MAX_ATTEMPTS) {
+                                disconnect(c.getID(), false);
+                            } else {
+                                c.attempt++;
+                            }
+                        }
+                        else {
+                            clientResponse.remove(Integer.valueOf(c.getID()));
+                            c.attempt = 0;
+                        }
+                    }
                 }
             }
         };
@@ -99,6 +120,8 @@ public class Server implements Runnable {
         } else if (string.startsWith("/d/")) {
             String id = string.split("/d/|/e/")[1];
             disconnect(Integer.parseInt(id), true);
+        } else if (string.startsWith("/i/")) {
+            clientResponse.add(Integer.parseInt(string.split("/i/|/e/")[1]));
         } else {
             System.out.println(string);
         }
